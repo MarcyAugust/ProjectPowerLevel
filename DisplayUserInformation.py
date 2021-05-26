@@ -6,7 +6,7 @@ from pprint import pprint
 
 
 
-twitch = Twitch('zcqh30g4nc79kkbc648a7aaox4mof0', 'jm3fqk7xvk7iyx3lvamtkkh4ov5x4b')
+twitch = Twitch('my_app_key', 'my_app_secret')
 
 
 target_scope = [AuthScope.BITS_READ]
