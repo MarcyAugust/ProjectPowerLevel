@@ -4,7 +4,7 @@ class Bot(commands.Bot):
 
     def __init__(self):
         #irc_token is user irc token, client_id is from app client_id, nick is username that's logged in, initial channels is where the bot goes to live.
-        super().__init__(irc_token='oauth:3hy6wxqm500ubbfegsz2t5iooch3ha', client_id='zcqh30g4nc79kkbc648a7aaox4mof0', nick='AugustMarcy', prefix='!',
+        super().__init__(irc_token='user_irc_token', client_id='client_id', nick='AugustMarcy', prefix='!',
                          initial_channels=['MarcyAugust'])
 
     # Events don't need decorators when subclassed

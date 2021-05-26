@@ -15,7 +15,7 @@ def callback_whisper(uuid: UUID, data: dict) -> None:
     #pprint(data)
 
 # setting up Authentication and getting your user id
-twitch = Twitch('zcqh30g4nc79kkbc648a7aaox4mof0', 'jm3fqk7xvk7iyx3lvamtkkh4ov5x4b')
+twitch = Twitch('my_app_key', 'client_id')
 
 twitch.authenticate_app([])
 auth = UserAuthenticator(twitch, [AuthScope.WHISPERS_READ], force_verify=False)
