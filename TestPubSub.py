@@ -28,7 +28,6 @@ def app_refresh(token: str):
 
 def callback_whisper(uuid: UUID, data: dict) -> None:
     print('got callback for UUID ' + str(uuid))
-    pprint(data)
     #username = data["data_object"].get("display_name")
     #print(username)
     #user_message = data["data_object"].get("body")
@@ -36,20 +35,29 @@ def callback_whisper(uuid: UUID, data: dict) -> None:
     #pprint(data)
 
 
+def points_redemption_to_console(uuid: UUID, data: dict) -> None:
+    print('A channel points reward has been redeemed!' + str(data))
+    #username = data["data_object"].get("display_name")
+    #print(username)
+    #user_message = data["data_object"].get("body")
+    #print(user_message)# + ": " + user_message) #+ data["data_object"].get("body"))#["recipient"])#, + ": " + data["data_object"]["body"])
+    #pprint(data)
+
 
 # setting up Authentication and getting your user id
 twitch = Twitch(app_key, app_secret)
 
-target_scope = [AuthScope.WHISPERS_READ]
+target_scope = [AuthScope.CHANNEL_READ_REDEMPTIONS]
 twitch.app_auth_refresh_callback = app_refresh
 twitch.user_auth_refresh_callback = user_refresh
 twitch.authenticate_app([])
 
-auth = UserAuthenticator(twitch, [AuthScope.WHISPERS_READ], force_verify=False)
-token, refresh_token = user_token, user_refresh_token
+auth = UserAuthenticator(twitch, [AuthScope.CHANNEL_READ_REDEMPTIONS], force_verify=False)
+token, refresh_token = user_token, user_refresh_token  
 new_token, new_refresh_token = refresh_access_token(refresh_token, app_key, app_secret)
-print(new_token)
-print(new_refresh_token)
+#new_token, new_refresh_token = auth.authenticate()
+#print(new_token)
+#print(new_refresh_token)
 
 
 # you can get your user auth token and user auth refresh token following the example in twitchAPI.oauth
@@ -68,7 +76,8 @@ pubsub.start()
 
 
 # you can either start listening before or after you started pubsub.
-uuid = pubsub.listen_whispers(user_id, callback_whisper)
+#'MarcyAugust' string used to be user_id
+uuid = pubsub.listen_channel_points(178394313, points_redemption_to_console)
 input('press ENTER to close...')
 # you do not need to unlisten to topics before stopping but you can listen and unlisten at any moment you want
 pubsub.unlisten(uuid)
