@@ -36,7 +36,7 @@ def callback_whisper(uuid: UUID, data: dict) -> None:
 
 
 def points_redemption_to_console(uuid: UUID, data: dict) -> None:
-    print('A channel points reward has been redeemed!' + str(data))
+    print('A channel points reward has been redeemed!')
     #username = data["data_object"].get("display_name")
     #print(username)
     #user_message = data["data_object"].get("body")
@@ -47,27 +47,29 @@ def points_redemption_to_console(uuid: UUID, data: dict) -> None:
 # setting up Authentication and getting your user id
 twitch = Twitch(app_key, app_secret)
 
-target_scope = [AuthScope.CHANNEL_READ_REDEMPTIONS]
+
+#listen don't question me I need all these permissions because reasons
+target_scope = [AuthScope.CHANNEL_READ_REDEMPTIONS, AuthScope.ANALYTICS_READ_EXTENSION, AuthScope.ANALYTICS_READ_GAMES, 
+                AuthScope.BITS_READ, AuthScope.CHANNEL_READ_SUBSCRIPTIONS, AuthScope.CHANNEL_READ_STREAM_KEY, 
+                AuthScope.CHANNEL_EDIT_COMMERCIAL, AuthScope.CHANNEL_READ_HYPE_TRAIN, AuthScope.CHANNEL_MANAGE_BROADCAST, 
+                AuthScope.CHANNEL_MANAGE_REDEMPTIONS, AuthScope.CLIPS_EDIT, AuthScope.USER_EDIT, AuthScope.USER_EDIT_BROADCAST, 
+                AuthScope.USER_READ_BROADCAST, AuthScope.USER_READ_EMAIL, AuthScope.USER_EDIT_FOLLOWS, AuthScope.CHANNEL_MODERATE, 
+                AuthScope.CHAT_EDIT, AuthScope.CHAT_READ, AuthScope.WHISPERS_READ, AuthScope.WHISPERS_EDIT, AuthScope.MODERATION_READ, 
+                AuthScope.CHANNEL_SUBSCRIPTIONS, AuthScope.CHANNEL_READ_EDITORS, AuthScope.CHANNEL_MANAGE_VIDEOS, 
+                AuthScope.USER_READ_BLOCKED_USERS, AuthScope.USER_MANAGE_BLOCKED_USERS, AuthScope.USER_READ_SUBSCRIPTIONS]
 twitch.app_auth_refresh_callback = app_refresh
 twitch.user_auth_refresh_callback = user_refresh
 twitch.authenticate_app([])
 
-auth = UserAuthenticator(twitch, [AuthScope.CHANNEL_READ_REDEMPTIONS], force_verify=False)
+#auth = UserAuthenticator(twitch, target_scope, force_verify=False)
+
 token, refresh_token = user_token, user_refresh_token  
 new_token, new_refresh_token = refresh_access_token(refresh_token, app_key, app_secret)
 #new_token, new_refresh_token = auth.authenticate()
-#print(new_token)
-#print(new_refresh_token)
-
 
 # you can get your user auth token and user auth refresh token following the example in twitchAPI.oauth
 twitch.set_user_authentication(new_token, target_scope, new_refresh_token)
 user_id = twitch.get_users(logins=['MarcyAugust'])['data'][0]['id']
-
-
-#target_scope = [AuthScope.BITS_READ]
-
-
 
 
 # starting up PubSub
@@ -76,8 +78,7 @@ pubsub.start()
 
 
 # you can either start listening before or after you started pubsub.
-#'MarcyAugust' string used to be user_id
-uuid = pubsub.listen_channel_points(178394313, points_redemption_to_console)
+uuid = pubsub.listen_channel_points(user_id, points_redemption_to_console)
 input('press ENTER to close...')
 # you do not need to unlisten to topics before stopping but you can listen and unlisten at any moment you want
 pubsub.unlisten(uuid)
