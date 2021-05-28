@@ -3,9 +3,11 @@ from twitchAPI.twitch import Twitch
 from twitchAPI.types import AuthScope
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.oauth import refresh_access_token
+from twitchio.ext import commands
 from pprint import pprint
 from uuid import UUID
 import configparser
+from BotStart import Bot
 
 
 #Reads config information from .gitignore file
@@ -15,7 +17,8 @@ app_key = parser.get('DEFAULT', 'app_key')
 app_secret = parser.get('DEFAULT', 'app_secret')
 user_token = parser.get('DEFAULT', 'user_oauth_token')
 user_refresh_token = parser.get('DEFAULT', 'user_oauth_refresh_token')
-
+bot_token = parser.get('DEFAULT', 'bot_oauth_token')
+bot_refresh_token = parser.get('DEFAULT', 'bot_oauth_refresh_token')
 
 
 def user_refresh(token: str, refresh_token: str):
@@ -44,6 +47,7 @@ def points_redemption_to_console(uuid: UUID, data: dict) -> None:
     #pprint(data)
 
 
+
 # setting up Authentication and getting your user id
 twitch = Twitch(app_key, app_secret)
 
@@ -61,15 +65,19 @@ twitch.app_auth_refresh_callback = app_refresh
 twitch.user_auth_refresh_callback = user_refresh
 twitch.authenticate_app([])
 
-#auth = UserAuthenticator(twitch, target_scope, force_verify=False)
 
-token, refresh_token = user_token, user_refresh_token  
-new_token, new_refresh_token = refresh_access_token(refresh_token, app_key, app_secret)
+
+#auth = UserAuthenticator(twitch, target_scope, force_verify=False)
 #new_token, new_refresh_token = auth.authenticate()
+
+
+#Refresh User's tokens, for set_user_authentication, and anything else related to the user
+new_token, new_refresh_token = refresh_access_token(user_refresh_token, app_key, app_secret)
 
 # you can get your user auth token and user auth refresh token following the example in twitchAPI.oauth
 twitch.set_user_authentication(new_token, target_scope, new_refresh_token)
 user_id = twitch.get_users(logins=['MarcyAugust'])['data'][0]['id']
+
 
 
 # starting up PubSub
@@ -79,6 +87,10 @@ pubsub.start()
 
 # you can either start listening before or after you started pubsub.
 uuid = pubsub.listen_channel_points(user_id, points_redemption_to_console)
+bot = Bot()
+bot.run()
+
+
 input('press ENTER to close...')
 # you do not need to unlisten to topics before stopping but you can listen and unlisten at any moment you want
 pubsub.unlisten(uuid)
