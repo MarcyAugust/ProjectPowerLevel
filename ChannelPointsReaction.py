@@ -8,6 +8,13 @@ from pprint import pprint
 from uuid import UUID
 import configparser
 from BotStart import Bot
+import asyncio
+from pynput.keyboard import Key, Controller
+from pynput.mouse import Button
+import time
+
+#mouse = Controller()
+keyboard = Controller()
 
 
 #Reads config information from .gitignore file
@@ -28,23 +35,34 @@ def app_refresh(token: str):
     print(f'my new app token is: {token}')
 
 
-
 def callback_whisper(uuid: UUID, data: dict) -> None:
     print('got callback for UUID ' + str(uuid))
-    #username = data["data_object"].get("display_name")
-    #print(username)
-    #user_message = data["data_object"].get("body")
-    #print(user_message)# + ": " + user_message) #+ data["data_object"].get("body"))#["recipient"])#, + ": " + data["data_object"]["body"])
     #pprint(data)
 
 
 def points_redemption_to_console(uuid: UUID, data: dict) -> None:
-    print('A channel points reward has been redeemed!')
+    chan = bot.get_channel("MarcyAugust")
+    loop = asyncio.get_event_loop()
+    #keyboard.press(Key.f12)
+    #keyboard.release(Key.f12)
+    #loop.create_task(chan.send("A channel points reward has been redeemed!"))
+    #print("A channel points reward has been redeemed!")
+    #data_dict = data
+    #pprint(dict)
+   #data_redemption = data_dict[]
+    #keyboard.press(Key.f12)
+    #keyboard.release(Key.f12)
+    #pprint(data)
+    #if( == "Lurking but hiya :3"):
+
+
     #username = data["data_object"].get("display_name")
     #print(username)
     #user_message = data["data_object"].get("body")
     #print(user_message)# + ": " + user_message) #+ data["data_object"].get("body"))#["recipient"])#, + ": " + data["data_object"]["body"])
     #pprint(data)
+    
+
 
 
 
@@ -67,18 +85,31 @@ twitch.authenticate_app([])
 
 
 
-#auth = UserAuthenticator(twitch, target_scope, force_verify=False)
-#new_token, new_refresh_token = auth.authenticate()
+auth = UserAuthenticator(twitch, target_scope, force_verify=False)
+marcy_token, marcy_refresh_token = auth.authenticate()
 
 
 #Refresh User's tokens, for set_user_authentication, and anything else related to the user
-new_token, new_refresh_token = refresh_access_token(user_refresh_token, app_key, app_secret)
+
+
+#new_token, new_refresh_token = refresh_access_token(user_refresh_token, app_key, app_secret)
+
+#Uncomment this and comment above if it breaks
+new_token, new_refresh_token = refresh_access_token(bot_refresh_token, app_key, app_secret)
+#marcy_token, marcy_refresh_token = refresh_access_token(user_refresh_token, app_key, app_secret)
+print(new_token)
+print(new_refresh_token)
 
 # you can get your user auth token and user auth refresh token following the example in twitchAPI.oauth
-twitch.set_user_authentication(new_token, target_scope, new_refresh_token)
+
+#This below is the Bot's Oauth Reauthorization, we want to use My oauth reauthorization
+#twitch.set_user_authentication(new_token, target_scope, new_refresh_token)
+twitch.set_user_authentication(marcy_token, target_scope, marcy_refresh_token)
+#Test for PubSub stuffs
+#twitch.set_user_authentication(marcy_token, target_scope, marcy_refresh_token)
 user_id = twitch.get_users(logins=['MarcyAugust'])['data'][0]['id']
 
-
+    
 
 # starting up PubSub
 pubsub = PubSub(twitch)
@@ -86,9 +117,16 @@ pubsub.start()
 
 
 # you can either start listening before or after you started pubsub.
+
+# REMOVE BELOW COMMENT AT SOME POINT PROBABLY IDFK
+# THIS ONE
+# RIGHT HERE
+# FOR THE LOVE OF GOD REMEMBER IT 
 uuid = pubsub.listen_channel_points(user_id, points_redemption_to_console)
+#uuid = pubsub.listen_whispers(user_id, callback_whisper)
 bot = Bot()
 bot.run()
+
 
 
 input('press ENTER to close...')
