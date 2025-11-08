@@ -1,11 +1,15 @@
 from twitchio.ext import commands
+from pynput.keyboard import Key, Controller
+import time
+
+keyboard = Controller()
 
 class Bot(commands.Bot):
 
     def __init__(self):
-        #irc_token is user irc token, client_id is from app client_id, nick is username that's logged in, initial channels is where the bot goes to live.
-        super().__init__(irc_token='user_irc_token', client_id='client_id', nick='AugustMarcy', prefix='!',
-                         initial_channels=['MarcyAugust'])
+        #irc_token is bot irc token, client_id is from app client_id, nick is username that's logged in, initial channels is where the bot goes to live.
+        super().__init__(irc_token='bot_irc_token', client_id='app_key', nick='AugustMarcy', prefix='!',
+                         initial_channels=['Marxcie'])
 
     # Events don't need decorators when subclassed
     async def event_ready(self):
@@ -20,22 +24,10 @@ class Bot(commands.Bot):
     async def my_command(self, ctx):
         await ctx.send(f'Hello {ctx.author.name}!')
 
-
-
-    @commands.command(name='topgames')
-    async def top_games(self, ctx):
-        top_games_currently = await super().get_chatters('MarcyAugust')
-        print(top_games_currently)
-        await ctx.send(top_games_currently)
-
-
-    #Combine get_users with get_chatters to have both ids and names available?
-    #@commands.command(name='followback')
-    #async def following_back(self, ctx):
-    #    mutual_following = await super().get_follow({ctx.author.name}, 'AugustMarcy')
-    #    print(mutual_following)
-    #    await ctx.send(f'Followback status: ' + mutual_following)
-
+    @commands.command(name='text')
+    async def my_command(self, ctx):
+        time.sleep(200)
+        await ctx.send(keyboard.press('h'))
 
 bot = Bot()
 bot.run()

@@ -1,6 +1,6 @@
-from twitchAPI.pubsub import PubSub
+from twitchAPI.eventsub import EventSub
 from twitchAPI.twitch import Twitch
-from twitchAPI.types import AuthScope
+from twitchAPI.type import AuthScope
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.oauth import refresh_access_token
 from twitchio.ext import commands
@@ -41,7 +41,7 @@ def callback_whisper(uuid: UUID, data: dict) -> None:
 
 
 def points_redemption_to_console(uuid: UUID, data: dict) -> None:
-    chan = bot.get_channel("MarcyAugust")
+    chan = bot.get_channel("Marxcie")
     loop = asyncio.get_event_loop()
     #keyboard.press(Key.f12)
     #keyboard.release(Key.f12)
@@ -107,13 +107,13 @@ print(new_refresh_token)
 twitch.set_user_authentication(marcy_token, target_scope, marcy_refresh_token)
 #Test for PubSub stuffs
 #twitch.set_user_authentication(marcy_token, target_scope, marcy_refresh_token)
-user_id = twitch.get_users(logins=['MarcyAugust'])['data'][0]['id']
+user_id = twitch.get_users(logins=['Marxcie'])['data'][0]['id']
 
     
 
 # starting up PubSub
-pubsub = PubSub(twitch)
-pubsub.start()
+eventSub = EventSub(twitch)
+eventSub.start()
 
 
 # you can either start listening before or after you started pubsub.
@@ -122,7 +122,7 @@ pubsub.start()
 # THIS ONE
 # RIGHT HERE
 # FOR THE LOVE OF GOD REMEMBER IT 
-uuid = pubsub.listen_channel_points(user_id, points_redemption_to_console)
+uuid = EventSub.listen_channel_points(user_id, points_redemption_to_console)
 #uuid = pubsub.listen_whispers(user_id, callback_whisper)
 bot = Bot()
 bot.run()
@@ -131,5 +131,5 @@ bot.run()
 
 input('press ENTER to close...')
 # you do not need to unlisten to topics before stopping but you can listen and unlisten at any moment you want
-pubsub.unlisten(uuid)
-pubsub.stop()
+eventSub.unlisten(uuid)
+eventSub.stop()

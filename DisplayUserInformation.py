@@ -1,7 +1,7 @@
 from twitchAPI.twitch import Twitch
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.oauth import refresh_access_token
-from twitchAPI.types import AuthScope
+from twitchAPI.type import AuthScope
 from pprint import pprint
 import configparser
 
@@ -33,4 +33,4 @@ token, refresh_token = user_token, user_refresh_token
 
 
 twitch.set_user_authentication(token, target_scope, refresh_token)
-pprint(twitch.get_users(logins=['MarcyAugust']))
+pprint(twitch.get_users(logins=['Marxcie']))

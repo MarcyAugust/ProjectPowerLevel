@@ -1,9 +1,11 @@
 from twitchio.ext import commands
 from twitchAPI.oauth import refresh_access_token
-from twitchAPI.pubsub import PubSub
+#from twitchAPI.eventsub import EventSub
 from twitchAPI.twitch import Twitch
-from twitchAPI.types import AuthScope
+from twitchAPI.helper import first
+from twitchAPI.type import AuthScope
 from twitchAPI.oauth import UserAuthenticator
+import asyncio
 
 import configparser
 from pynput.keyboard import Key, Controller
@@ -16,28 +18,32 @@ keyboard = Controller()
 #Reads config information from .gitignore file
 parser = configparser.ConfigParser()
 parser.read('config.ini')
-app_key = parser.get('DEFAULT', 'app_key')
+app_id = parser.get('DEFAULT', 'app_id')
 app_secret = parser.get('DEFAULT', 'app_secret')
+
+
 user_token = parser.get('DEFAULT', 'user_oauth_token')
-user_refresh_token = parser.get('DEFAULT', 'user_oauth_refresh_token')
+#user_refresh_token = parser.get('DEFAULT', 'user_oauth_refresh_token')
+
+
 bot_token = parser.get('DEFAULT', 'bot_oauth_token')
 bot_refresh_token = parser.get('DEFAULT', 'bot_oauth_refresh_token')
 
 #Refresh Bot's token, so that it can run itself as well as listen for channel things. 
-new_bot_token, new_bot_refresh_token = refresh_access_token(bot_refresh_token, app_key, app_secret)
+new_bot_token, new_bot_refresh_token = refresh_access_token(bot_refresh_token, app_id, app_secret)
 irc_token_fixed = 'oauth:' + new_bot_token
 
 
 
 
 
-#pass in irc token and app key in when initalizing bot
+#pass in irc token and app id in when initalizing bot
 class Bot(commands.Bot):
 
     def __init__(self):
         #irc_token is bot irc token, client_id is from app client_id, nick is username that's logged in, initial channels is where the bot goes to live.
-        super().__init__(irc_token=irc_token_fixed, client_id=app_key, nick='AugustMarcy', prefix='!',
-                         initial_channels=['MarcyAugust'])
+        super().__init__(irc_token=irc_token_fixed, client_id=app_id, nick='AugustMarcy', prefix='!',
+                         initial_channels=['Marxcie'])
 
 
 
